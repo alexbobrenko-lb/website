@@ -5,7 +5,7 @@ var renderCookieConsent = async () => {
   const VISITOR_ID = "_lb_fp";
   let domain;
   let enableLightbeamBranding = true; // show logo by default
-  let gpcEnabled = true; // show logo by default
+  let gpcEnabled = true; // if not explicitly disabled, honor GPC signals
 
   const cookieConsentTypes = {
     accept: "accept",
@@ -309,7 +309,7 @@ var renderCookieConsent = async () => {
       categoriesRejected,
       domainsAccepted,
       domainsRejected,
-    } = getConsentData({ isDoNotSell: true });
+    } = getConsentData();
 
     setLbCookies({
       name: LB_LOCAL_STORAGE_KEY,
@@ -346,7 +346,7 @@ var renderCookieConsent = async () => {
       ? globalDomain?.regionBannerInfo[0].banner
       : globalDomain?.banner;
 
-    globalBanner.showBanner = !!globalDomain?.regionBannerInfo.length
+    globalBanner.showBanner = !!globalDomain?.regionBannerInfo?.length
       ? globalDomain?.regionBannerInfo[0].showBanner
       : true;
     globalBanner.defaultConsentMode = !!globalDomain?.regionBannerInfo.length
@@ -1139,11 +1139,8 @@ var renderCookieConsent = async () => {
       // Check if GPC signal is present in the browser AND enabled in the client's config
       const isGpcEnabled =
         navigator.globalPrivacyControl === true && gpcEnabled;
-      if (isGpcEnabled) {
-        applyGpcConsent(domain);
-      } else {
-        renderBanner(domain.banner, showPreferences);
-      }
+      isGpcEnabled && applyGpcConsent(domain);
+      renderBanner(domain.banner, showPreferences);
     }
   };
 
