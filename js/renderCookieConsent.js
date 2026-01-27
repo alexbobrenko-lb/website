@@ -807,7 +807,11 @@ var renderCookieConsent = async () => {
             ${isMobile() ? " mobile-view" : ""} \
         "
         id="lb-cookie-consent-banner">\
-        <div class="lb-overlay"></div>
+        ${
+          banner?.layout.type === bannerTypes.popup
+            ? '<div class="lb-overlay"></div>'
+            : ""
+        }\
         <div \
           class="main-banner"\
           style="background-color: #${banner?.layout.banner?.backgroundColor};\
