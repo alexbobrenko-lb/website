@@ -30,6 +30,10 @@
   padding: 0;
 }
 
+.cookie-consent-banner-preferences {
+  z-index: 99999 !important;
+}
+
 .cookie-consent-banner-container {
   position: relative;
   z-index: 9999;
@@ -99,8 +103,8 @@
   justify-content: center;
 }
 
-.cookie-consent-banner-container.popup .overlay,
-.cookie-consent-banner-preferences .overlay {
+.cookie-consent-banner-container.popup .lb-overlay,
+.cookie-consent-banner-preferences .lb-overlay {
   position: absolute;
   z-index: 1;
   top: 0;
@@ -176,7 +180,8 @@
   font-weight: 600;
   font-size: 12px;
   max-width: 190px;
-  word-break: break-word;
+  width: max-content;
+  word-wrap: break-word;
 }
 .cookie-consent-banner-preferences .buttons .btn {
   padding: 5px 26px;

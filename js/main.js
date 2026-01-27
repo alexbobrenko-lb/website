@@ -188,14 +188,15 @@ var initCookieConsent = () => {
 
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = `${hostingUrlBase}/lbstyles_${cssHash}.css`;
+  // link.href = `${hostingUrlBase}/lbstyles_${cssHash}.css`;
+  link.href = `http://127.0.0.1:8080/assets/lbstyles.css`
   link.type = "text/css";
   document.head.appendChild(link);
 
   const scriptRenderer = document.createElement("script");
   scriptRenderer.type = "text/javascript";
   // scriptRenderer.src = `${hostingUrlBase}/renderCookieConsent_${jsHash}.js`;
-  scriptRenderer.src = `http://192.168.0.108:8080/js/renderCookieConsent.js`;
+  scriptRenderer.src = `http://127.0.0.1:8080/js/renderCookieConsent.js`;
   scriptRenderer.async = true;
   document.head.appendChild(scriptRenderer);
 

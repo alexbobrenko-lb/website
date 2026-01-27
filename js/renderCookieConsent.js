@@ -28,6 +28,12 @@ var renderCookieConsent = async () => {
     gpc: "gpc",
   };
 
+  const bannerTypes = {
+    popup: "popup",
+    classic: "classic",
+    floating: "floating",
+  };
+
   const defaultConsentModes = {
     reject: "reject-all",
     accept: "accept-all",
@@ -309,7 +315,7 @@ var renderCookieConsent = async () => {
       categoriesRejected,
       domainsAccepted,
       domainsRejected,
-    } = getConsentData();
+    } = getConsentData({ isDoNotSell: true });
 
     setLbCookies({
       name: LB_LOCAL_STORAGE_KEY,
@@ -801,7 +807,7 @@ var renderCookieConsent = async () => {
             ${isMobile() ? " mobile-view" : ""} \
         "
         id="lb-cookie-consent-banner">\
-        <div class="overlay"></div>
+        <div class="lb-overlay"></div>
         <div \
           class="main-banner"\
           style="background-color: #${banner?.layout.banner?.backgroundColor};\
@@ -994,7 +1000,7 @@ var renderCookieConsent = async () => {
       <div \
         class="${cssClasses}" \
         id="cookie-consent-banner-preferences">\
-          <div class="overlay"></div>\
+          <div class="lb-overlay"></div>\
           <div class="cookie-consent-banner-preferences-wrapper">
             <div class="lb-banner-header-wrapper">
               <div\
