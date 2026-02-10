@@ -125,14 +125,14 @@ var renderCookieConsent = async () => {
     return operaAgent
       ? "Opera"
       : safariAgent
-      ? "Safari"
-      : firefoxAgent
-      ? "Firefox"
-      : IExplorerAgent
-      ? "IE"
-      : chromeAgent
-      ? "Chrome"
-      : "";
+        ? "Safari"
+        : firefoxAgent
+          ? "Firefox"
+          : IExplorerAgent
+            ? "IE"
+            : chromeAgent
+              ? "Chrome"
+              : "";
   };
   const isMobile = () => {
     const regex =
@@ -230,7 +230,7 @@ var renderCookieConsent = async () => {
 
     const cookiesAccepted = domain?.cookies.filter((cookie) => {
       const isMandatory = !!categoriesAccepted.find(
-        (cat) => cat.id === cookie.cookieCategoryId
+        (cat) => cat.id === cookie.cookieCategoryId,
       );
 
       let isInEssentialDomains = false;
@@ -282,11 +282,11 @@ var renderCookieConsent = async () => {
 
     // calculate rejected data
     const cookiesRejected = domain.cookies.filter(
-      (c) => !cookiesAccepted.find((accepted) => accepted.id === c.id)
+      (c) => !cookiesAccepted.find((accepted) => accepted.id === c.id),
     );
 
     const categoriesRejected = domain.categories.filter(
-      (c) => !categoriesAccepted.find((accepted) => accepted.id === c.id)
+      (c) => !categoriesAccepted.find((accepted) => accepted.id === c.id),
     );
 
     const domainsRejected = domain.cookies
@@ -334,6 +334,7 @@ var renderCookieConsent = async () => {
       consentRejected: cookiesRejected.map((c) => c.name),
       categoriesAccepted: categoriesAccepted.map((c) => c.id),
       categoriesRejected: categoriesRejected.map((c) => c.id),
+      eventType: apiEventTypes.doNotSell,
       consentBy: consentByTypes.gpc,
     });
   };
@@ -343,7 +344,7 @@ var renderCookieConsent = async () => {
     const hostingUrlBase = lbCookieConsent.getHostingBaseUrl();
 
     const globalResponse = await fetch(
-      `${hostingUrlBase}/domain_config_${domainHash}.json`
+      `${hostingUrlBase}/domain_config_${domainHash}.json`,
     );
     const globalDomain = await globalResponse.json();
 
@@ -370,7 +371,7 @@ var renderCookieConsent = async () => {
           `${dataWebApp}/api/cookie-consent/domain?domainName=${dataDomain}`,
           {
             signal: controller.signal,
-          }
+          },
         ),
         new Promise((resolve) => {
           setTimeout(() => {
@@ -412,6 +413,17 @@ var renderCookieConsent = async () => {
     const savedPreferences = await response.json();
     savePreferencesInStorage(savedPreferences?.consentInfo?.categoriesAccepted);
     return savedPreferences.consentInfo;
+  };
+
+  const pushConsentToDataLayer = ({ gtagConsents, eventType }) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "cookie_consent_update", eventType });
+
+    Object.entries(gtagConsents)
+      .filter(([, value]) => value === "granted")
+      .forEach(([key]) => {
+        window.dataLayer.push({ event: `cookie_consent_${key}`, eventType });
+      });
   };
 
   const postCookieConsent = ({
@@ -457,6 +469,7 @@ var renderCookieConsent = async () => {
           }
         });
         lbCookieConsent.setConsentMode(gtagConsents);
+        pushConsentToDataLayer({ gtagConsents, eventType });
       } else {
         // send all granted only if eventType is "accept all"
         if (eventType === apiEventTypes.accept) {
@@ -465,6 +478,7 @@ var renderCookieConsent = async () => {
           });
         }
         lbCookieConsent.setConsentMode(gtagConsents);
+        pushConsentToDataLayer({ gtagConsents, eventType });
       }
     }
 
@@ -518,7 +532,7 @@ var renderCookieConsent = async () => {
     };
 
     const settingsFromStorage = getLbCookies(
-      LB_LOCAL_STORAGE_SCRIPT_SETTINGS_KEY
+      LB_LOCAL_STORAGE_SCRIPT_SETTINGS_KEY,
     );
 
     const isSameSettings =
@@ -546,7 +560,7 @@ var renderCookieConsent = async () => {
         });
         const consentAccepted = getUnique(domain.cookies.map((c) => c.name));
         savePreferencesInStorage(
-          domain.categories.map((category) => category.id)
+          domain.categories.map((category) => category.id),
         );
         postCookieConsent({
           consentAccepted,
@@ -959,7 +973,7 @@ var renderCookieConsent = async () => {
       };
 
       const categoryCookies = domain.cookies.filter(
-        (c) => c.cookieCategoryId === category.id
+        (c) => c.cookieCategoryId === category.id,
       );
 
       var SVG_CARET_RIGHT = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#${banner?.layout?.preferences?.category?.colorTitle}" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><polyline points="96 48 176 128 96 208" fill="none" stroke="#${banner?.layout?.preferences?.category?.colorTitle}" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"></polyline></svg>`;
@@ -1058,7 +1072,7 @@ var renderCookieConsent = async () => {
     `;
 
     const isBannerInDom = document.getElementById(
-      "cookie-consent-banner-preferences"
+      "cookie-consent-banner-preferences",
     );
     if (!isBannerInDom) {
       document.body.insertAdjacentHTML("beforeend", htmlPreferences);
@@ -1072,8 +1086,8 @@ var renderCookieConsent = async () => {
       <button class="lb-floating-btn ${
         isVisible ? "" : "hidden"
       } lb-floating-btn--${domain?.floatingButtonConfig?.style}" style="${
-      domain?.floatingButtonConfig?.position === "left" ? "left" : "right"
-    }: 60px" id="lb-floating-btn">\
+        domain?.floatingButtonConfig?.position === "left" ? "left" : "right"
+      }: 60px" id="lb-floating-btn">\
         ${domain?.floatingButtonConfig?.icon}
       </button>`;
 
@@ -1140,7 +1154,7 @@ var renderCookieConsent = async () => {
     if (lbCookieConsent.isLoadedViaGtm) {
       renderFloatingButton(
         (isVisible = !!(item || lbCookieConsent.isPrefCenterOnly)),
-        domain
+        domain,
       );
     }
 

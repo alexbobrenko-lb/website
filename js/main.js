@@ -1,13 +1,13 @@
 // domain Public Suffix List library start
-var dataDomain = "lb-cc.great-site.net"
-var dataScriptHost = "https://demo-cookie-management.s3.us-west-2.amazonaws.com"
-var dataWebApp = "https://dev-release-privacy.lightbeamsecurity.com"
-var hostUrl = "https://demo-cookie-management.s3.us-west-2.amazonaws.com"
-var ccVersion = "7"
-var domainId = "964824ce-2e4e-4bf5-b417-261c889b6141"
-var jsHash = "0bc98c3"
-var cssHash = "99739d0"
-var domainHash = "7865a8b"
+var dataDomain = "proformfitness.ca"
+var dataScriptHost = "https://85a977bda9a57d3a66a93bc7e3bd024d.s3.us-east-2.amazonaws.com"
+var dataWebApp = "https://ifitprivacy.lightbeam-ai.com"
+var hostUrl = "https://85a977bda9a57d3a66a93bc7e3bd024d.s3.us-east-2.amazonaws.com"
+var ccVersion = "75"
+var domainId = "b7874cf0-56ac-4858-a9f6-e11d14753d33"
+var jsHash = "664a04f"
+var cssHash = "9b8646b"
+var domainHash = "dcc9aa7"
 var customWhiteListUrls = []
 
 // prettier-ignore eslint-disable-next-line no-unused-vars
@@ -42,7 +42,8 @@ var lbCookieConsentRoot = document.getElementById("lb-cookie-consent") || docume
 var lbCookieConsent = {
   root: lbCookieConsentRoot,
   isLoadedViaGtm: !!window.lbCookieConsentGcm?.scriptHostURL,
-  isGcmOn: lbCookieConsentRoot?.src?.includes('gcm=true'),
+  // isGcmOn: lbCookieConsentRoot?.src?.includes('gcm=true'),
+  isGcmOn: true,
   isPrefCenterOnly: lbCookieConsentRoot?.src?.includes('prefCenterOnly=true'),
 
   ensureGtag: () => {
@@ -234,14 +235,14 @@ var initCookieConsent = () => {
   const link = document.createElement("link");
   link.rel = "stylesheet";
   // link.href = `${hostingUrlBase}/lbstyles_${cssHash}.css`;
-    link.href = `http://127.0.0.1:8080/assets/lbstyles.css`
+    link.href = `/assets/lbstyles.css`
   link.type = "text/css";
   document.head.appendChild(link);
 
   const scriptRenderer = document.createElement("script");
   scriptRenderer.type = "text/javascript";
   // scriptRenderer.src = `${hostingUrlBase}/renderCookieConsent_${jsHash}.js`;
-    scriptRenderer.src = `http://127.0.0.1:8080/js/renderCookieConsent.js`;
+    scriptRenderer.src = `/js/renderCookieConsent.js`;
   scriptRenderer.async = true;
   document.head.appendChild(scriptRenderer);
 
