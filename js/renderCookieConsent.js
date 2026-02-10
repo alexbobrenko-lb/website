@@ -416,13 +416,15 @@ var renderCookieConsent = async () => {
   };
 
   const pushConsentToDataLayer = ({ gtagConsents, eventType }) => {
+    const getGtmConsentKey = (key) => `lightbeam_cc_${key}`;
+
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: "cookie_consent_update", eventType });
+    window.dataLayer.push({ event: getGtmConsentKey("update"), eventType });
 
     Object.entries(gtagConsents)
       .filter(([, value]) => value === "granted")
       .forEach(([key]) => {
-        window.dataLayer.push({ event: `cookie_consent_${key}`, eventType });
+        window.dataLayer.push({ event: getGtmConsentKey(key), eventType });
       });
   };
 
