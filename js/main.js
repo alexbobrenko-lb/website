@@ -75,9 +75,24 @@ var lbCookieConsent = {
     window.__lbConsentDefaultInited = true;
   },
 
-  setConsentMode: (consents) => {
+  setConsentMode: (consents, options = {}) => {
+    const {
+      eventType = "",
+      acceptedCategories = [],
+      deniedCategories = [],
+    } = options;
+
     lbCookieConsent.ensureGtag();
     window.gtag('consent', 'update', consents);
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "lb_cookie_consent_update",
+      eventType,
+      acceptedCategories,
+      deniedCategories,
+      gtagConsents: consents,
+    });
   },
 
   getHostingBaseUrl: () => {
@@ -235,14 +250,14 @@ var initCookieConsent = () => {
   const link = document.createElement("link");
   link.rel = "stylesheet";
   // link.href = `${hostingUrlBase}/lbstyles_${cssHash}.css`;
-    link.href = `/assets/lbstyles.css`
+  link.href = `/assets/lbstyles.css`
   link.type = "text/css";
   document.head.appendChild(link);
 
   const scriptRenderer = document.createElement("script");
   scriptRenderer.type = "text/javascript";
   // scriptRenderer.src = `${hostingUrlBase}/renderCookieConsent_${jsHash}.js`;
-    scriptRenderer.src = `/js/renderCookieConsent.js`;
+  scriptRenderer.src = `/js/renderCookieConsent.js`;
   scriptRenderer.async = true;
   document.head.appendChild(scriptRenderer);
 
