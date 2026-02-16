@@ -43,6 +43,9 @@ var LB_GCM_DEFAULT_CONSENT = {
  * 
  *  gcmMapping: Array<{ gcmCategory: string, defaultConsent: string }>
  *  Example:  [{ "gcmCategory": "ad_personalization", "defaultConsent": "On by default" }]
+ * 
+ *  defaultsInitialized: boolean // default constns injected by GTM template code
+ *  Example: true
  * }
  */
 var lbCookieConsentRoot = document.getElementById("lb-cookie-consent") || document.querySelector('[src*="amazonaws.com/cookie_consent_"]');
@@ -65,6 +68,10 @@ var lbCookieConsent = {
   hasConsentDefault: () => {
     const queue = window.dataLayer || [];
     return queue.some((item) => item?.[0] === "consent" && item?.[1] === "default");
+  },
+
+  hasTemplateDefaults: () => {
+    return !!window.lbCookieConsentGcm?.defaultsInitialized;
   },
 
   getInitialGcmConsents: () => {
@@ -98,11 +105,11 @@ var lbCookieConsent = {
 
     lbCookieConsent.ensureGtag();
 
-    if (!lbCookieConsent.hasConsentDefault()) {
+    if (!lbCookieConsent.hasTemplateDefaults() && !lbCookieConsent.hasConsentDefault()) {
       window.gtag("consent", "default", lbCookieConsent.getInitialGcmConsents());
-      window.gtag("set", "ads_data_redaction", true);
-      window.gtag("set", "url_passthrough", true);
     }
+    window.gtag("set", "ads_data_redaction", true);
+    window.gtag("set", "url_passthrough", true);
 
     window.__lbConsentDefaultInited = true;
   },
