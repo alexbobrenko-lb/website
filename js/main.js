@@ -27,6 +27,10 @@ var LB_GCM_INITIAL_CONSENTS = {
   security_storage: "granted",
   wait_for_update: 500,
 };
+var LB_GCM_DEFAULT_CONSENT = {
+  denied: "Off by default",
+  granted: "On by default",
+};
 
 /**
  * window.lbCookieConsentGcm = {
@@ -36,6 +40,12 @@ var LB_GCM_INITIAL_CONSENTS = {
  * 
  *  webAppServerHost: string
  *  Example: https://web-app.lightbeam.com
+ * 
+ *  gcmMapping: Array<{ gcmCategory: string, defaultConsent: string }>
+ *  Example:  [{ "gcmCategory": "ad_personalization", "defaultConsent": "On by default" }]
+ * 
+ *  defaultsInitialized: boolean // default constns injected by GTM template code
+ *  Example: true
  * }
  */
 var lbCookieConsentRoot = document.getElementById("lb-cookie-consent") || document.querySelector('[src*="amazonaws.com/cookie_consent_"]');
@@ -60,17 +70,46 @@ var lbCookieConsent = {
     return queue.some((item) => item?.[0] === "consent" && item?.[1] === "default");
   },
 
+  hasTemplateDefaults: () => {
+    return !!window.lbCookieConsentGcm?.defaultsInitialized;
+  },
+
+  getInitialGcmConsents: () => {
+    const initialConsents = { ...LB_GCM_INITIAL_CONSENTS };
+    const gcmMapping = window.lbCookieConsentGcm?.gcmMapping;
+
+    if (!Array.isArray(gcmMapping)) return initialConsents;
+
+    gcmMapping.forEach((item) => {
+      const gcmCategory = item?.gcmCategory;
+      const defaultConsent = item?.defaultConsent;
+
+      if (
+        !gcmCategory ||
+        typeof defaultConsent !== "string" ||
+        !(gcmCategory in initialConsents) ||
+        typeof initialConsents[gcmCategory] !== "string"
+      ) {
+        return;
+      }
+
+      initialConsents[gcmCategory] = defaultConsent === LB_GCM_DEFAULT_CONSENT.granted ? 'granted' : 'denied';
+    });
+
+    return initialConsents;
+  },
+
   initGtagDefaults: () => {
     if (!(lbCookieConsent.isGcmOn || lbCookieConsent.isLoadedViaGtm)) return;
     if (window.__lbConsentDefaultInited) return;
 
     lbCookieConsent.ensureGtag();
 
-    if (!lbCookieConsent.hasConsentDefault()) {
-      window.gtag("consent", "default", LB_GCM_INITIAL_CONSENTS);
-      window.gtag("set", "ads_data_redaction", true);
-      window.gtag("set", "url_passthrough", true);
+    if (!lbCookieConsent.hasTemplateDefaults() && !lbCookieConsent.hasConsentDefault()) {
+      window.gtag("consent", "default", lbCookieConsent.getInitialGcmConsents());
     }
+    window.gtag("set", "ads_data_redaction", true);
+    window.gtag("set", "url_passthrough", true);
 
     window.__lbConsentDefaultInited = true;
   },
